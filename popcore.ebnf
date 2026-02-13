@@ -1,0 +1,174 @@
+preprocessor_input      ::= preprocessor_lines .
+preprocessor_lines      ::= preprocessor_line preprocessor_lines | .
+preprocessor_line       ::= directive | code_line .
+directive               ::= define_directive
+                            | undef_directive
+                            | include_directive
+                            | ifdef_directive
+                            | ifndef_directive
+                            | else_directive
+                            | endif_directive .
+define_directive        ::= '#' 'define' identifier ( integer | string_literal ) newline .
+undef_directive         ::= '#' 'undef' identifier newline .
+include_directive       ::= '#' 'include' ( '"' filename '"' | '<' filename '>' ) newline .
+ifdef_directive         ::= '#' 'ifdef' identifier newline .
+ifndef_directive        ::= '#' 'ifndef' identifier newline .
+else_directive          ::= '#' 'else' newline .
+endif_directive         ::= '#' 'endif' newline .
+
+
+
+program                 ::= declaration program | .
+
+declaration             ::= function_definition
+                        | struct_definition
+                        | extern_function_declaration .
+
+function_definition     ::= "fn" identifier "(" parameter_list ")" "->" type block
+                        | "fn" identifier "(" ")" "->" type block .
+
+extern_function_declaration ::= "extern" "fn" identifier "(" parameter_list ")" "->" type ";"
+                           | "extern" "fn" identifier "(" ")" "->" type ";" .
+
+struct_definition       ::= "struct" identifier "{" field_declarations "}" .
+
+field_declarations      ::= field_declaration field_declarations
+                        |  .
+
+field_declaration       ::= identifier ":" type ";" .
+
+parameter_list          ::= parameter
+                        | parameter "," parameter_list .
+
+parameter               ::= identifier ":" type .
+
+type                    ::= "i32"
+                        | "i8"
+                        | "string"
+                        | pointer_type
+                        | "void" .
+
+pointer_type            ::= "*" type .
+
+block                   ::= "{" statement_list "}" .
+
+statement_list          ::= statement statement_list
+                        |  .
+
+statement               ::= variable_declaration
+                        | assignment_statement
+                        | if_statement
+                        | while_statement
+                        | return_statement
+                        | expression ";"
+                        | ";" .
+
+variable_declaration    ::= "let" identifier ":" type "=" expression ";"
+                        | "let" identifier ":" type ";" .
+
+assignment_statement    ::= lvalue "=" expression ";" .
+
+lvalue                  ::= identifier
+                        | dereference_expression
+                        | field_access .
+
+dereference_expression  ::= "*" expression .
+
+field_access            ::= expression "." identifier .
+
+if_statement            ::= "if" expression block "else" block
+                        | "if" expression block .
+
+while_statement         ::= "while" expression block .
+
+return_statement        ::= "return" expression ";"
+                        | "return" ";" .
+
+expression              ::= logical_or_expression .
+
+logical_or_expression   ::= logical_and_expression "||" logical_or_expression
+                        | logical_and_expression .
+
+logical_and_expression  ::= equality_expression "&&" logical_and_expression
+                        | equality_expression .
+
+equality_expression     ::= relational_expression "==" equality_expression
+                        | relational_expression "!=" equality_expression
+                        | relational_expression .
+
+relational_expression   ::= additive_expression "<" relational_expression
+                        | additive_expression "<=" relational_expression
+                        | additive_expression ">" relational_expression
+                        | additive_expression ">=" relational_expression
+                        | additive_expression .
+
+additive_expression     ::= multiplicative_expression "+" additive_expression
+                        | multiplicative_expression "-" additive_expression
+                        | multiplicative_expression .
+
+multiplicative_expression ::= unary_expression "*" multiplicative_expression
+                            | unary_expression "/" multiplicative_expression
+                            | unary_expression "%" multiplicative_expression
+                            | unary_expression .
+
+unary_expression        ::= "+" unary_expression
+                        | "-" unary_expression
+                        | "!" unary_expression
+                        | "~" unary_expression
+                        | "&" unary_expression
+                        | "*" unary_expression
+                        | primary_expression .
+
+primary_expression      ::= integer_literal
+                        | char_literal
+                        | string_literal
+                        | identifier
+                        | "(" expression ")"
+                        | function_call
+                        | field_access_expr .
+
+function_call           ::= identifier "(" argument_list ")"
+                        | identifier "(" ")" .
+
+argument_list           ::= expression
+                        | expression "," argument_list .
+
+field_access_expr       ::= "(" expression ")" "." identifier .
+
+integer_literal         ::= digit digit*
+                        | digit .
+
+char_literal            ::= "'" character "'" .
+
+character               ::= "a" | "b" | "c" | "d" | "e" | "f" | "g" | "h" | "i" | "j"
+                        | "k" | "l" | "m" | "n" | "o" | "p" | "q" | "r" | "s" | "t"
+                        | "u" | "v" | "w" | "x" | "y" | "z"
+                        | "A" | "B" | "C" | "D" | "E" | "F" | "G" | "H" | "I" | "J"
+                        | "K" | "L" | "M" | "N" | "O" | "P" | "Q" | "R" | "S" | "T"
+                        | "U" | "V" | "W" | "X" | "Y" | "Z"
+                        | "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
+                        | " " | "!" | "#" | "$" | "%" | "&" | "(" | ")" | "*" | "+"
+                        | "," | "-" | "." | "/" | ":" | ";" | "<" | "=" | ">" | "?"
+                        | "@" | "[" | "\\" | "]" | "^" | "_" | "`" | "{" | "|" | "}"
+                        | "~" .
+
+string_literal          ::= '"' string_char* '"' .
+
+string_char             ::= [^"]*.
+
+identifier              ::= letter identifier_rest
+                        | letter .
+
+identifier_rest         ::= letter identifier_rest
+                        | digit identifier_rest
+                        | "_" identifier_rest
+                        |  .
+
+letter                  ::= "a" | "b" | "c" | "d" | "e" | "f" | "g" | "h" | "i" | "j"
+                        | "k" | "l" | "m" | "n" | "o" | "p" | "q" | "r" | "s" | "t"
+                        | "u" | "v" | "w" | "x" | "y" | "z"
+                        | "A" | "B" | "C" | "D" | "E" | "F" | "G" | "H" | "I" | "J"
+                        | "K" | "L" | "M" | "N" | "O" | "P" | "Q" | "R" | "S" | "T"
+                        | "U" | "V" | "W" | "X" | "Y" | "Z" .
+
+digit                   ::= "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" .
