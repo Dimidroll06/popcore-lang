@@ -1,0 +1,3 @@
+// syscalls.prcore
+extern fn write(fd: i32, buf: *i8, count: i32) -> i32;
+extern fn exit(code: i32) -> void;

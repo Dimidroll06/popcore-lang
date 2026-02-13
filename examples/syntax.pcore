@@ -1,0 +1,93 @@
+#define VERSION 1
+#define DEBUG_MSG "Syntax demo running\n"
+#define TARGET_X86_64 1
+
+#ifdef TARGET_X86_64
+#include "syscalls.pcore"
+#endif
+
+#ifndef NO_STRUCTS
+struct Point {
+    x: i32;
+    y: i32;
+}
+
+struct ListNode {
+    data: i32;
+    next: *ListNode;
+}
+#endif
+
+fn print_char(c: i8) -> void {
+    let buf: i8 = c;
+    write(1, &buf, 1);
+}
+
+fn print_str(s: *i8) -> void {
+    // Простая печать до нулевого байта (в реальности нужно знать длину)
+    // Для демо — просто напечатаем несколько символов
+    print_char(*s);
+    print_char(*(s + 1));
+    print_char(*(s + 2));
+    print_char('\n');
+}
+
+fn factorial(n: i32) -> i32 {
+    if n <= 1 {
+        return 1;
+    } else {
+        return n * factorial(n - 1);
+    }
+}
+
+fn main() -> i32 {
+#ifdef VERSION
+    ; // Пустой оператор
+#endif
+
+    // Работа со структурами
+    let origin: Point;
+    origin.x = 0;
+    origin.y = 0;
+
+    // Указатели и арифметика
+    let p: *i32 = &origin.x;
+    *p = 10;
+
+    // Вызов функции
+    let result: i32 = factorial(5);
+
+    // Ветвление
+    if result == 120 {
+        // Печать через extern
+        let msg: string = "OK\n";
+        write(1, msg, 3);
+    } else {
+        let msg: string = "FAIL\n";
+        write(1, msg, 5);
+        return 1;
+    }
+
+    // Цикл
+    let i: i32 = 0;
+    while i < 3 {
+        print_char('A' + i);
+        i = i + 1;
+    }
+    print_char('\n');
+
+    // Логические операции
+    let flag1: i32 = 1;
+    let flag2: i32 = 0;
+    if flag1 && !flag2 {
+        let s: string = "Logic OK\n";
+        write(1, s, 9);
+    }
+
+    // Побитовые операции
+    let bits: i32 = 0b1010;
+    let masked: i32 = bits & 0b1111;
+
+    // Возврат
+    return 0;
+}
